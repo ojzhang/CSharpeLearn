@@ -3176,6 +3176,7 @@
     "net9.0": [
       "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore >= 9.0.8",
       "Microsoft.EntityFrameworkCore >= 9.0.8",
+      "Microsoft.EntityFrameworkCore.Design >= 9.0.8",
       "Microsoft.EntityFrameworkCore.Tools >= 9.0.8",
       "Npgsql.EntityFrameworkCore.PostgreSQL >= 9.0.4",
       "TodoList.Core >= 1.0.0"
@@ -3240,6 +3241,12 @@
             "version": "[9.0.8, )"
           },
           "Microsoft.EntityFrameworkCore": {
+            "target": "Package",
+            "version": "[9.0.8, )"
+          },
+          "Microsoft.EntityFrameworkCore.Design": {
+            "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+            "suppressParent": "All",
             "target": "Package",
             "version": "[9.0.8, )"
           },
