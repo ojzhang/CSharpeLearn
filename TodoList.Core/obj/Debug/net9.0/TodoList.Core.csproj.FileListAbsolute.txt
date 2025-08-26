@@ -1,0 +1,12 @@
+D:\C#_projects\TodoList\TodoList.Core\bin\Debug\net9.0\TodoList.Core.deps.json
+D:\C#_projects\TodoList\TodoList.Core\bin\Debug\net9.0\TodoList.Core.dll
+D:\C#_projects\TodoList\TodoList.Core\bin\Debug\net9.0\TodoList.Core.pdb
+D:\C#_projects\TodoList\TodoList.Core\obj\Debug\net9.0\TodoList.Core.csproj.AssemblyReference.cache
+D:\C#_projects\TodoList\TodoList.Core\obj\Debug\net9.0\TodoList.Core.GeneratedMSBuildEditorConfig.editorconfig
+D:\C#_projects\TodoList\TodoList.Core\obj\Debug\net9.0\TodoList.Core.AssemblyInfoInputs.cache
+D:\C#_projects\TodoList\TodoList.Core\obj\Debug\net9.0\TodoList.Core.AssemblyInfo.cs
+D:\C#_projects\TodoList\TodoList.Core\obj\Debug\net9.0\TodoList.Core.csproj.CoreCompileInputs.cache
+D:\C#_projects\TodoList\TodoList.Core\obj\Debug\net9.0\TodoList.Core.dll
+D:\C#_projects\TodoList\TodoList.Core\obj\Debug\net9.0\refint\TodoList.Core.dll
+D:\C#_projects\TodoList\TodoList.Core\obj\Debug\net9.0\TodoList.Core.pdb
+D:\C#_projects\TodoList\TodoList.Core\obj\Debug\net9.0\ref\TodoList.Core.dll

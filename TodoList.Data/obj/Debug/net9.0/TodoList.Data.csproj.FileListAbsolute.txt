@@ -1,0 +1,17 @@
+D:\C#_projects\TodoList\TodoList.Data\bin\Debug\net9.0\TodoList.Data.deps.json
+D:\C#_projects\TodoList\TodoList.Data\bin\Debug\net9.0\TodoList.Data.runtimeconfig.json
+D:\C#_projects\TodoList\TodoList.Data\bin\Debug\net9.0\TodoList.Data.dll
+D:\C#_projects\TodoList\TodoList.Data\bin\Debug\net9.0\TodoList.Data.pdb
+D:\C#_projects\TodoList\TodoList.Data\bin\Debug\net9.0\TodoList.Core.dll
+D:\C#_projects\TodoList\TodoList.Data\bin\Debug\net9.0\TodoList.Core.pdb
+D:\C#_projects\TodoList\TodoList.Data\obj\Debug\net9.0\TodoList.Data.csproj.AssemblyReference.cache
+D:\C#_projects\TodoList\TodoList.Data\obj\Debug\net9.0\TodoList.Data.GeneratedMSBuildEditorConfig.editorconfig
+D:\C#_projects\TodoList\TodoList.Data\obj\Debug\net9.0\TodoList.Data.AssemblyInfoInputs.cache
+D:\C#_projects\TodoList\TodoList.Data\obj\Debug\net9.0\TodoList.Data.AssemblyInfo.cs
+D:\C#_projects\TodoList\TodoList.Data\obj\Debug\net9.0\TodoList.Data.csproj.CoreCompileInputs.cache
+D:\C#_projects\TodoList\TodoList.Data\obj\Debug\net9.0\TodoList.9748C86C.Up2Date
+D:\C#_projects\TodoList\TodoList.Data\obj\Debug\net9.0\TodoList.Data.dll
+D:\C#_projects\TodoList\TodoList.Data\obj\Debug\net9.0\refint\TodoList.Data.dll
+D:\C#_projects\TodoList\TodoList.Data\obj\Debug\net9.0\TodoList.Data.pdb
+D:\C#_projects\TodoList\TodoList.Data\obj\Debug\net9.0\TodoList.Data.genruntimeconfig.cache
+D:\C#_projects\TodoList\TodoList.Data\obj\Debug\net9.0\ref\TodoList.Data.dll
