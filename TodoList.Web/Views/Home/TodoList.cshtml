@@ -1,0 +1,46 @@
+@model TodoList.Web.Models.TodoItemCreateViewModel
+
+@{
+    ViewData["Title"] = "Create Todo Item";
+}
+
+<h1>@ViewData["Title"]</h1>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="TodoList" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group mb-3">
+                <label asp-for="ItemTitle" class="control-label"></label>
+                <input asp-for="ItemTitle" class="form-control" placeholder="请输入标题（3-50个字符）" />
+                <span asp-validation-for="ItemTitle" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="ItemContent" class="control-label"></label>
+                <textarea asp-for="ItemContent" class="form-control" id="CreateContentTextArea" rows="4" placeholder="请输入内容（15-200个字符）"></textarea>
+                <span asp-validation-for="ItemContent" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="DueToDateTime" class="control-label"></label>
+                <input type="datetime-local" asp-for="DueToDateTime" class="form-control" />
+                <span asp-validation-for="DueToDateTime" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="ItemTags" class="control-label"></label>
+                <input type="text" asp-for="ItemTags" class="form-control" id="Tags" placeholder="标签用逗号分隔，如：工作,重要" />
+                <span asp-validation-for="ItemTags" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="创建" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">返回首页</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<partial name="_EditorStylePartial" />
+
+@section Scripts {
+    <partial name="_EditorScriptsPartial" />
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,6 @@
+{
+  "omnisharp.useGlobalMono": "never",
+  "omnisharp.path": "latest",
+  "editor.formatOnSave": true,
+  "omnisharp.enableEditorConfigSupport": true
+}

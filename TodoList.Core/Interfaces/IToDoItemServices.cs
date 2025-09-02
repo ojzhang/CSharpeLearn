@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using TodoList.Core.Models;
 
-namespace TodoList.Core.Interface
+namespace TodoList.Core.Interfaces
 {
     public interface ITodoItemServices
     {
@@ -25,5 +25,6 @@ namespace TodoList.Core.Interface
         Task<IEnumerable<TodoItem>> GetMonthlyItems(ApplicationUser user, int Month);
 
         Task<bool> SaveFileAsync(Guid todoId, ApplicationUser currentUser, string path, long size);
+        Task<bool> UpdateDoneAsync(Guid id, ApplicationUser currentUser);
     }
 }
