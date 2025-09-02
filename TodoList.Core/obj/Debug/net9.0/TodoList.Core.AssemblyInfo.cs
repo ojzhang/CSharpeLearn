@@ -10,10 +10,11 @@
 using System;
 using System.Reflection;
 
+[assembly: Microsoft.AspNetCore.Identity.UI.UIFrameworkAttribute("Bootstrap5")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("TodoList.Core")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1504813516ca184b6823f533eceb6b2c479e2917")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+15c3f929a569d4b4e263dd7185b4e5a271e9868b")]
 [assembly: System.Reflection.AssemblyProductAttribute("TodoList.Core")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TodoList.Core")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -10,3 +10,4 @@ D:\C#_projects\TodoList\TodoList.Core\obj\Debug\net9.0\TodoList.Core.dll
 D:\C#_projects\TodoList\TodoList.Core\obj\Debug\net9.0\refint\TodoList.Core.dll
 D:\C#_projects\TodoList\TodoList.Core\obj\Debug\net9.0\TodoList.Core.pdb
 D:\C#_projects\TodoList\TodoList.Core\obj\Debug\net9.0\ref\TodoList.Core.dll
+D:\C#_projects\TodoList\TodoList.Core\obj\Debug\net9.0\TodoList.Core.sourcelink.json

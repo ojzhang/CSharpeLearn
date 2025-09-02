@@ -54,6 +54,10 @@
               "target": "Package",
               "version": "[9.0.8, )"
             },
+            "Microsoft.AspNetCore.Identity.UI": {
+              "target": "Package",
+              "version": "[9.0.8, )"
+            },
             "NodaTime": {
               "target": "Package",
               "version": "[3.2.0, )"
@@ -337,6 +341,10 @@
               "suppressParent": "All",
               "target": "Package",
               "version": "[9.0.8, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[9.0.4, )"
             }
           },
           "imports": [

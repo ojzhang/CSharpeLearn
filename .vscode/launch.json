@@ -1,0 +1,16 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch TodoList API",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/TodoList.API/bin/Debug/net9.0/TodoList.API.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/TodoList.API",
+      "console": "internalConsole",
+      "stopAtEntry": false
+    }
+  ]
+}

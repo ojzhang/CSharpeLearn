@@ -68,7 +68,7 @@ namespace TodoList.Core.Models
         /// <summary>
         /// 关联的文件信息
         /// </summary>
-        public FileInfo File { get; set; }
+        public TodoItemFile File { get; set; }
 
         /// <summary>
         /// 用于EF序列化目的的添加时间属性
