@@ -5,6 +5,7 @@ using TodoList.Core.Interfaces;
 using TodoList.Core.Models;
 using NodaTime;
 using System.Threading.Tasks;
+using TodoList.Web.Models.HomeViewModels;
 
 namespace TodoList.Web.Controllers;
 
@@ -21,9 +22,24 @@ public class HomeController : Controller
         _clock = clock;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        return View();
+        // 创建一个默认用户用于演示
+        var currentUser = new ApplicationUser
+        {
+            Id = "default-user-id",
+            UserName = "default@example.com"
+        };
+
+        // 获取未完成的待办事项
+        var todoItems = await _todoItemService.GetIncompleteItemsAsync(currentUser);
+        
+        var model = new IndexViewModel
+        {
+            TodoItems = todoItems
+        };
+
+        return View(model);
     }
 
     public IActionResult Privacy()
