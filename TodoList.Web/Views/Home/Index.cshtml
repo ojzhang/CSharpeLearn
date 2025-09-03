@@ -1,8 +1,77 @@
-﻿@{
+@using TodoList.Core.Models
+@model TodoList.Web.Models.HomeViewModels.IndexViewModel
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">我的待办事项</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h3>待办事项列表</h3>
+                <a href="@Url.Action("TodoList", "Home")" class="btn btn-primary float-right">添加新事项</a>
+            </div>
+            <div class="card-body">
+                @if (Model.TodoItems.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>标题</th>
+                                    <th>内容</th>
+                                    <th>截止日期</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.TodoItems)
+                                {
+                                    <tr>
+                                        <td>@item.Title</td>
+                                        <td>@item.Content</td>
+                                        <td>
+                                            @if (item.DueTo != NodaTime.Instant.MinValue)
+                                            {
+                                                @item.DueTo.ToDateTimeUtc().ToString("yyyy-MM-dd HH:mm")
+                                            }
+                                            else
+                                            {
+                                                <span>无截止日期</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (item.Done)
+                                            {
+                                                <span class="badge badge-success">已完成</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-warning">未完成</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <a href="#" class="btn btn-sm btn-info">编辑</a>
+                                            <a href="#" class="btn btn-sm btn-danger">删除</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-info">
+                        <p>暂无待办事项，请添加新事项。</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
 </div>
