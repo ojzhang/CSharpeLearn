@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="DeleteSuccess" xml:space="preserve">
+    <value>待办事项删除成功</value>
+  </data>
+  <data name="DeleteFailure" xml:space="preserve">
+    <value>删除待办事项失败</value>
+  </data>
+  <data name="ItemNotFound" xml:space="preserve">
+    <value>未找到指定的待办事项</value>
+  </data>
+</root>

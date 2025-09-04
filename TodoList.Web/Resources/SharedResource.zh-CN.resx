@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="HomePage" xml:space="preserve">
+    <value>首页</value>
+  </data>
+  <data name="PrivacyPage" xml:space="preserve">
+    <value>隐私</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>语言</value>
+  </data>
+  <data name="Chinese" xml:space="preserve">
+    <value>中文</value>
+  </data>
+  <data name="English" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="TodoList" xml:space="preserve">
+    <value>待办事项</value>
+  </data>
+  <data name="TodoListPage" xml:space="preserve">
+    <value>创建TodoList</value>
+  </data>
+</root>

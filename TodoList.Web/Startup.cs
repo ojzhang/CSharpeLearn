@@ -57,7 +57,7 @@ namespace TodoList.Web
             #region 本地化支持
             // 添加本地化服务
             services.AddLocalization(options => options.ResourcesPath = "Resources");
-            
+
             // 配置视图本地化和数据注解本地化
             services.AddControllersWithViews()
                 .AddViewLocalization()
@@ -87,17 +87,13 @@ namespace TodoList.Web
             app.UseCookiePolicy();
             app.UseAuthentication();
 
-            var supportedCultures = new[]
-            {
-                new CultureInfo("en-US"),
-                new CultureInfo("zh-CN"),
-            };
-            app.UseRequestLocalization(new RequestLocalizationOptions
-            {
-                DefaultRequestCulture = new RequestCulture("en-US"),
-                SupportedCultures = supportedCultures,
-                SupportedUICultures = supportedCultures
-            });
+            var supportedCultures = new[] { "zh-CN", "en-US" };
+            var localizationOptions = new RequestLocalizationOptions()
+                .SetDefaultCulture(supportedCultures[0])
+                .AddSupportedCultures(supportedCultures)
+                .AddSupportedUICultures(supportedCultures);
+
+            app.UseRequestLocalization(localizationOptions);
 
             app.UseRouting();
             app.UseAuthorization();

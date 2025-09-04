@@ -1,19 +1,37 @@
 @using TodoList.Core.Models
+@using Microsoft.Extensions.Localization
+@using TodoList.Web.Views.Home
+@inject IStringLocalizer<IndexView> Localizer
 @model TodoList.Web.Models.HomeViewModels.IndexViewModel
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = Localizer["Welcome"];
 }
 
 <div class="text-center">
-    <h1 class="display-4">我的待办事项</h1>
+    <h1 class="display-4">@Localizer["Welcome"]</h1>
 </div>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
 
 <div class="row">
     <div class="col-md-12">
         <div class="card">
             <div class="card-header">
-                <h3>待办事项列表</h3>
-                <a href="@Url.Action("TodoList", "Home")" class="btn btn-primary float-right">添加新事项</a>
+                <h3>@Localizer["TodoListHeader"]</h3>
+                <a href="@Url.Action("TodoList", "Home")"
+                    class="btn btn-primary float-right">@Localizer["AddNewItem"]</a>
             </div>
             <div class="card-body">
                 @if (Model.TodoItems.Any())
@@ -22,11 +40,11 @@
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>标题</th>
-                                    <th>内容</th>
-                                    <th>截止日期</th>
-                                    <th>状态</th>
-                                    <th>操作</th>
+                                    <th>@Localizer["Title"]</th>
+                                    <th>@Localizer["Content"]</th>
+                                    <th>@Localizer["DueDate"]</th>
+                                    <th>@Localizer["Status"]</th>
+                                    <th>@Localizer["Actions"]</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -42,22 +60,32 @@
                                             }
                                             else
                                             {
-                                                <span>无截止日期</span>
+                                                <span>@Localizer["NoDueDate"]</span>
                                             }
                                         </td>
                                         <td>
                                             @if (item.Done)
                                             {
-                                                <span class="badge badge-success">已完成</span>
+                                                <span class="badge badge-success"
+                                                    style="color: black;">@Localizer["Completed"]</span>
                                             }
                                             else
                                             {
-                                                <span class="badge badge-warning">未完成</span>
+                                                <span class="badge badge-warning"
+                                                    style="color: black;">@Localizer["NotCompleted"]</span>
                                             }
                                         </td>
                                         <td>
-                                            <a href="#" class="btn btn-sm btn-info">编辑</a>
-                                            <a href="#" class="btn btn-sm btn-danger">删除</a>
+                                            <a href="#" class="btn btn-sm btn-info">@Localizer["Edit"]</a>
+
+                                            <!-- 删除表单 -->
+                                            <form asp-action="Delete" method="post" style="display: inline;">
+                                                <input type="hidden" name="id" value="@item.Id" />
+                                                <button type="submit" class="btn btn-sm btn-danger"
+                                                    onclick="return confirm('@Localizer["DeleteConfirmation"]');">
+                                                    @Localizer["Delete"]
+                                                </button>
+                                            </form>
                                         </td>
                                     </tr>
                                 }
@@ -68,7 +96,7 @@
                 else
                 {
                     <div class="alert alert-info">
-                        <p>暂无待办事项，请添加新事项。</p>
+                        <p>@Localizer["NoTodoItems"]</p>
                     </div>
                 }
             </div>
