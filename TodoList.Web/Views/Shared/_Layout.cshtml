@@ -1,5 +1,13 @@
-﻿<!DOCTYPE html>
-<html lang="zh-Hant">
+@using Microsoft.AspNetCore.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SharedResource> SharedLocalizer
+@{
+    var requestCulture = Context.Features.Get<IRequestCultureFeature>();
+    var cultureItems = new[] { "zh-CN", "en-US" };
+}
+
+<!DOCTYPE html>
+<html lang="@(requestCulture.RequestCulture.UICulture.Name)" xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
     <meta charset="utf-8" />
@@ -15,7 +23,8 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">TodoList</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home"
+                    asp-action="Index">@SharedLocalizer["TodoList"]</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
                     aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -23,17 +32,37 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home"
+                                asp-action="Index">@SharedLocalizer["HomePage"]</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home"
-                                asp-action="Privacy">Privacy</a>
+                                asp-action="Privacy">@SharedLocalizer["PrivacyPage"]</a>
                         </li>
                         <li class="nav-item"></li>
                         <a class="nav-link text-dark" asp-area="" asp-controller="Home"
-                            asp-action="TodoList">TodoList</a>
+                            asp-action="TodoList">@SharedLocalizer["TodoListPage"]</a>
                         </li>
                     </ul>
+
+                    <!-- Language Switcher -->
+                    <form asp-controller="Home" asp-action="SetLanguage" method="post" class="form-inline">
+                        <input name="returnUrl" type="hidden"
+                            value="@Context.Request.Path@Context.Request.QueryString" />
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">@SharedLocalizer["Language"]</span>
+                            </div>
+                            <select name="culture" onchange="this.form.submit();" class="form-control">
+                                <option value="zh-CN"
+                                    selected="@(requestCulture.RequestCulture.UICulture.Name == "zh-CN")">
+                                    @SharedLocalizer["Chinese"]</option>
+                                <option value="en-US"
+                                    selected="@(requestCulture.RequestCulture.UICulture.Name == "en-US")">
+                                    @SharedLocalizer["English"]</option>
+                            </select>
+                        </div>
+                    </form>
                 </div>
             </div>
         </nav>

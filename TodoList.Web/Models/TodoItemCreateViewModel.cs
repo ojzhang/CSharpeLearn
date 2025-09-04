@@ -11,8 +11,8 @@ namespace TodoList.Web.Models
         [Display(Name = "Title")]
         public string ItemTitle { get; set; }
 
-        [MaxLength(200)]
-        [MinLength(15)]
+        [MaxLength(1000)]
+        [MinLength(3)]
         [DataType(DataType.MultilineText)]
         [Display(Name = "Content")]
         public string ItemContent { get; set; }

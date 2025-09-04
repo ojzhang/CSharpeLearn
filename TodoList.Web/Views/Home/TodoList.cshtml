@@ -1,5 +1,8 @@
+@using TodoList.Core.Models
+@using Microsoft.Extensions.Localization
+@using TodoList.Web.Views.Home
 @model TodoList.Web.Models.TodoItemCreateViewModel
-
+@inject IStringLocalizer<IndexView> Localizer
 @{
     ViewData["Title"] = "Create Todo Item";
 }
@@ -17,7 +20,8 @@
             </div>
             <div class="form-group mb-3">
                 <label asp-for="ItemContent" class="control-label"></label>
-                <textarea asp-for="ItemContent" class="form-control" id="CreateContentTextArea" rows="4" placeholder="请输入内容（15-200个字符）"></textarea>
+                <textarea asp-for="ItemContent" class="form-control" id="CreateContentTextArea" rows="4"
+                    placeholder="请输入内容（3-200个字符）"></textarea>
                 <span asp-validation-for="ItemContent" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
@@ -42,5 +46,7 @@
 
 @section Scripts {
     <partial name="_EditorScriptsPartial" />
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

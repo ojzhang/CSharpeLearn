@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="DeleteSuccess" xml:space="preserve">
+    <value>Todo item deleted successfully</value>
+  </data>
+  <data name="DeleteFailure" xml:space="preserve">
+    <value>Failed to delete todo item</value>
+  </data>
+  <data name="ItemNotFound" xml:space="preserve">
+    <value>Specified todo item not found</value>
+  </data>
+</root>
