@@ -12,8 +12,7 @@ using TodoList.Core.Contexts;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using Npgsql;
-
-// using TodoList.API.Extensions;
+using System.Collections.Generic;
 
 namespace TodoList.Web
 {
@@ -43,7 +42,7 @@ namespace TodoList.Web
                 options.UseNpgsql(
                     Configuration.GetConnectionString("PostgreSql")));
             #endregion
-
+            
             #region 单例服务
             // 添加NodaTime时钟服务
             services.AddSingleton<IClock>(SystemClock.Instance);
@@ -64,14 +63,21 @@ namespace TodoList.Web
                 .AddDataAnnotationsLocalization();
             #endregion
 
+            #region SPA支持
+            // 添加SPA服务以支持React
+            services.AddSpaStaticFiles(configuration =>
+            {
+                configuration.RootPath = "ClientApp/build";
+            });
+            #endregion
+
             #region 基础设施
             services.AddRazorPages();
             services.AddLogging();
-            // 添加数据库开发者页面异常过滤器
-            services.AddDatabaseDeveloperPageExceptionFilter();
             #endregion
         }
 
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -81,12 +87,14 @@ namespace TodoList.Web
             else
             {
                 app.UseExceptionHandler("/Home/Error");
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
             }
-
+            app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseCookiePolicy();
-            app.UseAuthentication();
+            app.UseSpaStaticFiles();
 
+            // 配置本地化
             var supportedCultures = new[] { "zh-CN", "en-US" };
             var localizationOptions = new RequestLocalizationOptions()
                 .SetDefaultCulture(supportedCultures[0])
@@ -96,7 +104,10 @@ namespace TodoList.Web
             app.UseRequestLocalization(localizationOptions);
 
             app.UseRouting();
+
+            app.UseAuthentication();
             app.UseAuthorization();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
@@ -104,6 +115,20 @@ namespace TodoList.Web
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
+
+            // 暂时禁用 SPA 配置以避免冲突
+            /*
+            app.UseSpa(spa =>
+            {
+                spa.Options.SourcePath = "ClientApp";
+
+                if (env.IsDevelopment())
+                {
+                    // 使用代理方式替代直接调用React Development Server
+                    spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
+                }
+            });
+            */
         }
     }
 }
