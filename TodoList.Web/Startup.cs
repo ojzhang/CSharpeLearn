@@ -43,7 +43,7 @@ namespace TodoList.Web
                 options.UseNpgsql(
                     Configuration.GetConnectionString("PostgreSql")));
             #endregion
-            
+
             #region 单例服务
             // 添加NodaTime时钟服务
             services.AddSingleton<IClock>(SystemClock.Instance);
@@ -117,19 +117,17 @@ namespace TodoList.Web
                 endpoints.MapRazorPages();
             });
 
-            // 暂时禁用 SPA 配置以避免冲突
-            /*
+            // 启用SPA配置以使用React应用
             app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "ClientApp";
 
                 if (env.IsDevelopment())
                 {
-                    // 使用代理方式替代直接调用React Development Server
+                    // 使用代理到独立的React开发服务器，避免使用过时的UseReactDevelopmentServer
                     spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
                 }
             });
-            */
         }
     }
 }

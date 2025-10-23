@@ -1,16 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using TodoList.API.Extensions;
 
 namespace TodoList.API
@@ -30,6 +17,7 @@ namespace TodoList.API
             services.ConfigureEntityFramework(Configuration, _logger);
             services.ConfigureIdentity(_logger);
             services.ConfigureJwtAuthentication(Configuration, _logger);
+            services.ConfigureJwtBlacklist(_logger);
             services.ConfigureRepository(_logger);
             services.ConfigureStorage(Configuration, _logger);
             services.ConfigureAutoMapper(_logger);

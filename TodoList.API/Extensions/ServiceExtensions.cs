@@ -17,6 +17,7 @@ using TodoList.Core.Interfaces;
 using TodoList.Core.Models;
 using TodoList.Core.Services;
 // using TodoList.Core.Services;
+using TodoList.API.Services;
 
 namespace TodoList.API.Extensions
 {
@@ -29,7 +30,15 @@ namespace TodoList.API.Extensions
             IConfiguration configuration,
             ILogger logger)
         {
-            var connectionStringBuilder = new NpgsqlConnectionStringBuilder(configuration["ConnectionStrings:PostgreSql"]);
+            // Prefer GetConnectionString helper; validate and fail fast if missing
+            var connStr = configuration.GetConnectionString("PostgreSql");
+            if (string.IsNullOrWhiteSpace(connStr))
+            {
+                logger.LogError("PostgreSql connection string is not configured. Check appsettings.json or environment variables.");
+                throw new InvalidOperationException("Connection string 'PostgreSql' is not configured.");
+            }
+
+            var connectionStringBuilder = new NpgsqlConnectionStringBuilder(connStr);
             services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseNpgsql(connectionStringBuilder.ConnectionString, x => x.MigrationsAssembly("TodoList.Data"));
@@ -69,6 +78,23 @@ namespace TodoList.API.Extensions
                         ValidAudience = config["Authentication:JWT:Audience"],
                         IssuerSigningKey = new SymmetricSecurityKey(
                             Encoding.UTF8.GetBytes(config["Authentication:JWT:SecurityKey"]))
+                    };
+                    
+                    // Add custom event to check token blacklist
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnTokenValidated = async context =>
+                        {
+                            var blacklistService = context.HttpContext.RequestServices.GetService<IJwtBlacklistService>();
+                            if (blacklistService != null)
+                            {
+                                var tokenId = context.SecurityToken.Id;
+                                if (await blacklistService.IsTokenBlacklistedAsync(tokenId))
+                                {
+                                    context.Fail("Token has been revoked");
+                                }
+                            }
+                        }
                     };
                 });
             services.AddAuthorization();
@@ -114,6 +140,15 @@ namespace TodoList.API.Extensions
             var storageService = new LocalFileStorageService(configuration["LocalFileStorageBasePath"]);
             services.AddSingleton<IFileStorageService>(storageService);
             logger.LogInformation("Configured Storage service.");
+        }
+        
+        /// <summary>
+        /// Configures JWT blacklist service.
+        /// </summary>
+        public static void ConfigureJwtBlacklist(this IServiceCollection services, ILogger logger)
+        {
+            services.AddSingleton<IJwtBlacklistService, JwtBlacklistService>();
+            logger.LogInformation("Configured JWT blacklist service.");
         }
     }
 }

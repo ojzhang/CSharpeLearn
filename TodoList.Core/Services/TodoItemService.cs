@@ -32,8 +32,9 @@ namespace TodoList.Core.Services
 
         public async Task<IEnumerable<TodoItem>> GetItemsByTagAsync(ApplicationUser currentUser, string tag)
         {
+            // Ensure results are scoped to the current user to avoid leaking other users' items
             return await _context.TodoItem
-                .Where(t => t.Tags.Contains(tag))
+                .Where(t => t.UserId == currentUser.Id && t.Tags.Contains(tag))
                 .ToArrayAsync();
         }
 
@@ -178,11 +179,9 @@ namespace TodoList.Core.Services
         {
             // 计算一天前的时间点
             var yesterday = _clock.GetCurrentInstant().Minus(Duration.FromDays(1));
-            // 将NodaTime的Instant转换为DateTime，用于数据库查询
-            var yesterdayDateTime = yesterday.ToDateTimeUtc();
             return await _context.TodoItem
                 .Where(t => t.UserId == currentUser.Id && !t.Done
-                && t.AddedDateTime >= yesterdayDateTime)
+                && t.Added >= yesterday)
                 .ToArrayAsync();
         }
 
@@ -195,11 +194,9 @@ namespace TodoList.Core.Services
         {
             // 计算从现在起一天后的时间点作为阈值
             var dueToThreshold = _clock.GetCurrentInstant().Plus(Duration.FromDays(1));
-            // 将NodaTime的Instant转换为DateTime，用于数据库查询
-            var dueToThresholdDateTime = dueToThreshold.ToDateTimeUtc();
             return await _context.TodoItem
                 .Where(t => t.UserId == user.Id && !t.Done
-                && t.DuetoDateTime <= dueToThresholdDateTime)
+                && t.DueTo <= dueToThreshold && t.DueTo != Instant.MinValue)
                 .ToArrayAsync();
         }
 
@@ -213,8 +210,9 @@ namespace TodoList.Core.Services
         {
             return await _context.TodoItem
                 .Where(t => t.UserId == user.Id && !t.Done)
-                // 筛选DuetoDateTime不为null且月份匹配的待办事项
-                .Where(t => t.DuetoDateTime != null && t.DuetoDateTime.Value.Month == month)
+                // 使用 DueTo 属性而不是过时的 DuetoDateTime 属性
+                .Where(t => t.DueTo != Instant.MinValue
+                    && t.DueTo.ToDateTimeUtc().Month == month)
                 .ToArrayAsync();
         }
 

@@ -8,6 +8,7 @@
     "@types/react-dom": "^18.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-router-dom": "^6.30.1",
     "react-scripts": "^5.0.1",
     "typescript": "^4.9.5"
   },
@@ -34,5 +35,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "webpack-dev-server": "^4.15.2"
   }
 }
