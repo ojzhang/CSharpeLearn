@@ -24,7 +24,7 @@ function authHeaders(): Record<string, string> {
 }
 
 export async function getTodos() {
-    const res = await fetch(`${API_BASE}/api/todoitems`, {
+    const res = await fetch(`${API_BASE}/api/todoitems/getitems`, {
         headers: authHeaders(),
     });
     if (!res.ok) throw new Error(res.statusText);

@@ -4,5 +4,5 @@ export interface TodoItem {
   content: string;
   done: boolean;
   dueTo: string;
-  tag: string;
+  tags: string;
 }

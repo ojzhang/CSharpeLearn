@@ -3,6 +3,7 @@ using TodoList.API.Extensions;
 using System.Security.Claims;
 using NodaTime;
 using NodaTime.Serialization.SystemTextJson;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 var logger = LoggerFactory.Create(lb => lb.AddConsole()).CreateLogger("Startup");
 
 // Configure services using the existing ServiceExtensions
-builder.Services.AddOpenApi();
+builder.Services.AddSwaggerGen();
 // Configure controllers and register NodaTime converters so Instant is serialized as ISO string
 builder.Services.AddControllers().AddJsonOptions(opts =>
 {
@@ -81,7 +82,13 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    // Show detailed exception page in Development to aid debugging of 500 errors
+    app.UseDeveloperExceptionPage();
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "TodoList API V1");
+    });
     // Development-only minimal endpoint to quickly verify frontend<->backend connectivity
     app.MapGet("/api/dev/minimal/todos", () =>
     {
@@ -126,7 +133,14 @@ if (app.Environment.IsDevelopment())
     }).RequireAuthorization();
 }
 
-app.UseHttpsRedirection();
+// Only use HTTPS redirection in non-development environments. During local development
+// the frontend often runs on http://localhost:3000 and forcing an HTTP->HTTPS redirect
+// can cause CORS/preflight requests to fail (redirect responses may not include the
+// Access-Control-Allow-Origin header). Restrict HTTPS redirection to production.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 // If a client build exists (e.g. React production build), serve it as static files so the API can
 // also host the SPA in production. This looks for the build in ../TodoList.Web/ClientApp/build

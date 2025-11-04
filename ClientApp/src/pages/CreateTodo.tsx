@@ -6,14 +6,21 @@ const CreateTodo: React.FC = () => {
   const [title, setTitle] = useState<string>('');
   const [content, setContent] = useState<string>('');
   const [dueTo, setDueTo] = useState<string>('');
-  const [tag, setTag] = useState<string>('');
+  const [tags, setTag] = useState<string>('');
   const navigate = useNavigate();
 
   const createTodoItem = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      await api.createTodo({ title, content, duetoDateTime: dueTo ? new Date(dueTo).toISOString() : null });
+      // Normalize tags: split, trim and rejoin without spaces to satisfy server validation
+      const sanitizedTags = tags
+        .split(',')
+        .map(t => t.trim())
+        .filter(t => t.length > 0)
+        .join(',');
+
+      await api.createTodo({ title, content, duetoDateTime: dueTo ? new Date(dueTo).toISOString() : null, tags: sanitizedTags });
       navigate('/');
     } catch (error) {
       console.error('创建待办事项失败:', error);
@@ -72,12 +79,12 @@ const CreateTodo: React.FC = () => {
               />
             </div>
             <div className="form-group mb-3">
-              <label htmlFor="tag" className="control-label">标签</label>
+              <label htmlFor="tags" className="control-label">标签</label>
               <input
                 type="text"
                 className="form-control"
-                id="tag"
-                value={tag}
+                id="tags"
+                value={tags}
                 onChange={(e) => setTag(e.target.value)}
                 placeholder="请输入标签"
                 required

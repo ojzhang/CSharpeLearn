@@ -55,12 +55,13 @@ namespace TodoList.Core.Services
             // 关联当前用户
             todo.UserId = user.Id;
             // 确保DueTo属性也被正确设置
-            // 如果传入的todo对象中DueTo属性为默认值，则不进行特殊处理
-            // 只有当DueTo属性被设置为有效值时才保持该值
+            // 如果传入的todo对象中DueTo属性为默认值（未设置），将其设为添加时间（Added），
+            // 以避免向数据库插入 NULL 导致违反 NOT NULL 约束的问题。
             if (todo.DueTo == NodaTime.Instant.MinValue)
             {
-                // 如果DueTo是默认值，则保持默认值，不需要额外设置
-                todo.DueTo = NodaTime.Instant.MinValue;
+                // 使用已设置的 Added 时间作为默认截止时间（表示与添加时间相同），
+                // 这样数据库列会收到非空的 DateTime 值。
+                todo.DueTo = todo.Added;
             }
             // 如果DueTo已经被设置为有效值，则保持该值不变
 

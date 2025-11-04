@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace TodoList.API.Models
@@ -16,7 +16,7 @@ namespace TodoList.API.Models
 
         public bool? Done { get; set; }
 
-        public DateTime DuetoDateTime { get; set; }
+        public DateTime? DuetoDateTime { get; set; }
 
         // Allow Unicode letters/numbers (e.g. Chinese) as well as ASCII word characters and hyphen.
         // Limit to at most 3 comma-separated tags.

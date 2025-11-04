@@ -3,14 +3,10 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NodaTime;
 using Npgsql;
-using Swashbuckle.AspNetCore.Swagger;
 using TodoList.API.MapperProfiles;
 using TodoList.Core.Contexts;
 using TodoList.Core.Interfaces;
@@ -55,8 +51,11 @@ namespace TodoList.API.Extensions
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "TodoList API", Version = "v1" });
+                // Register operation filter that handles IFormFile parameters
+                c.OperationFilter<SwaggerFileOperationFilter>();
             });
-            logger.LogInformation("Configured Swagger.");
+
+            logger.LogInformation("Configured Swagger and registered file upload OperationFilter.");
         }
 
         /// <summary>
@@ -64,39 +63,43 @@ namespace TodoList.API.Extensions
         /// </summary>
         public static void ConfigureJwtAuthentication(this IServiceCollection services, IConfiguration config, ILogger logger)
         {
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = config["Authentication:JWT:Issuer"],
+                    ValidAudience = config["Authentication:JWT:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(config["Authentication:JWT:SecurityKey"]))
+                };
 
-                        ValidIssuer = config["Authentication:JWT:Issuer"],
-                        ValidAudience = config["Authentication:JWT:Audience"],
-                        IssuerSigningKey = new SymmetricSecurityKey(
-                            Encoding.UTF8.GetBytes(config["Authentication:JWT:SecurityKey"]))
-                    };
-                    
-                    // Add custom event to check token blacklist
-                    options.Events = new JwtBearerEvents
+                // 保留已存在的事件（如黑名单检测）
+                options.Events = new JwtBearerEvents
+                {
+                    OnTokenValidated = async context =>
                     {
-                        OnTokenValidated = async context =>
+                        var blacklistService = context.HttpContext.RequestServices.GetService<IJwtBlacklistService>();
+                        if (blacklistService != null)
                         {
-                            var blacklistService = context.HttpContext.RequestServices.GetService<IJwtBlacklistService>();
-                            if (blacklistService != null)
+                            var tokenId = context.SecurityToken.Id;
+                            if (await blacklistService.IsTokenBlacklistedAsync(tokenId))
                             {
-                                var tokenId = context.SecurityToken.Id;
-                                if (await blacklistService.IsTokenBlacklistedAsync(tokenId))
-                                {
-                                    context.Fail("Token has been revoked");
-                                }
+                                context.Fail("Token has been revoked");
                             }
                         }
-                    };
-                });
+                    }
+                };
+            });
+
             services.AddAuthorization();
             logger.LogInformation("Configured JWT authentication scheme.");
         }
@@ -141,7 +144,7 @@ namespace TodoList.API.Extensions
             services.AddSingleton<IFileStorageService>(storageService);
             logger.LogInformation("Configured Storage service.");
         }
-        
+
         /// <summary>
         /// Configures JWT blacklist service.
         /// </summary>

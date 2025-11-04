@@ -74,6 +74,7 @@ const TodoList: React.FC<TodoListProps> = ({ items, onDelete, onToggle }) => {
             <th>内容</th>
             <th>截止日期</th>
             <th>状态</th>
+            <th>标签</th>
             <th>操作</th>
           </tr>
         </thead>
@@ -99,6 +100,7 @@ const TodoList: React.FC<TodoListProps> = ({ items, onDelete, onToggle }) => {
                     {item.done ? '已完成' : '未完成'}
                   </button>
                 </td>
+                <td>{item.tags}</td>
                 <td>
                   <button
                     className="btn btn-danger"

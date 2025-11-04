@@ -12,6 +12,9 @@ namespace TodoList.API.MapperProfiles
     {
         public TodoItemProfile()
         {
+            // Convert comma-separated tags string into IEnumerable<string> using a dedicated converter
+            CreateMap<string, IEnumerable<string>>().ConvertUsing<TagStringToEnumerableConverter>();
+
             CreateMap<TodoItemDto, TodoItem>();
         }
     }

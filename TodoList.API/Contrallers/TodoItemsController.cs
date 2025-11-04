@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 using System.Linq;
 using TodoList.API.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 using TodoList.Core.Interfaces;
 using TodoList.Core.Models;
@@ -22,21 +23,23 @@ namespace TodoList.API.Controllers
     [Authorize]
     public class TodoItemsController : ControllerBase
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<ApplicationUser>? _userManager;
         private readonly ITodoItemServices _todoService;
         private readonly IFileStorageService _fileStorageService;
         private readonly IMapper _mapper;
         private readonly ILogger<TodoItemsController> _logger;
         private readonly IJwtBlacklistService _jwtBlacklistService;
 
-        public TodoItemsController(UserManager<ApplicationUser> userManager,
+        public TodoItemsController(IServiceProvider serviceProvider,
             ITodoItemServices todoService,
             IFileStorageService fileStorageService,
             IMapper mapper,
             ILogger<TodoItemsController> logger,
             IJwtBlacklistService jwtBlacklistService)
         {
-            _userManager = userManager;
+            // Resolve UserManager optionally so controller activation doesn't fail when Identity/EF
+            // are not registered (e.g. dev mode without DB). Use GetService to allow null.
+            _userManager = serviceProvider.GetService<UserManager<ApplicationUser>>();
             _todoService = todoService;
             _fileStorageService = fileStorageService;
             _mapper = mapper;
@@ -54,19 +57,23 @@ namespace TodoList.API.Controllers
             }
 
             // First try to resolve the current user via UserManager (works for Identity-backed schemes)
-            var user = await _userManager.GetUserAsync(User);
-            if (user != null) return user;
+            ApplicationUser? user = null;
+            if (_userManager != null)
+            {
+                user = await _userManager.GetUserAsync(User);
+                if (user != null) return user;
+            }
 
             // Fallback to common claim types on the principal
             var id = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
-            if (!string.IsNullOrEmpty(id))
+            if (!string.IsNullOrEmpty(id) && _userManager != null)
             {
                 user = await _userManager.FindByIdAsync(id);
                 if (user != null) return user;
             }
 
             var email = User.FindFirstValue(ClaimTypes.Email);
-            if (!string.IsNullOrEmpty(email))
+            if (!string.IsNullOrEmpty(email) && _userManager != null)
             {
                 user = await _userManager.FindByEmailAsync(email);
                 if (user != null) return user;
@@ -74,7 +81,7 @@ namespace TodoList.API.Controllers
 
             return null;
         }
-
+        [HttpGet("getitems")]
         public async Task<ActionResult<IEnumerable<TodoItem>>> GetAllAsync()
         {
             var user = await GetCurrentUserAsync();
@@ -168,53 +175,85 @@ namespace TodoList.API.Controllers
         [HttpPost]
         public async Task<ActionResult<TodoItem>> CreateItem([FromBody] TodoItemDto item)
         {
-            var user = await GetCurrentUserAsync();
-            if (user == null)
+            try
             {
-                _logger.LogError($"Unknown user tried creating item.");
-                return Unauthorized();
-            }
+                // Wrap logic in try/catch to capture and return detailed errors during development
+                // This helps diagnose 500 errors coming from services or mapping.
 
-            if (item == null)
+                var user = await GetCurrentUserAsync();
+                if (user == null)
+                {
+                    _logger.LogError($"Unknown user tried creating item.");
+                    return Unauthorized();
+                }
+
+                if (item == null)
+                {
+                    _logger.LogError($"Unknown user tried creating item.");
+                    return Unauthorized();
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError($"Invalid item provided.");
+                    return BadRequest(ModelState);
+                }
+
+                if (item.Done == null) item.Done = false;
+                var dbItem = _mapper.Map<TodoItem>(item);
+                // Ensure DuetoDateTime (EF-mapped property) is set so it maps to the DueTo column
+                // Map DTO DateTime to entity Instant (DueTo) used by EF serialization property
+                if (item.DuetoDateTime.HasValue)
+                {
+                    dbItem.DueTo = Instant.FromDateTimeUtc(DateTime.SpecifyKind(item.DuetoDateTime.Value, DateTimeKind.Utc));
+                }
+                // Convert comma separated tags string into IEnumerable<string>
+                if (!string.IsNullOrWhiteSpace(item.Tags))
+                {
+                    dbItem.Tags = item.Tags.Split(',')
+                        .Select(t => t.Trim())
+                        .Where(t => !string.IsNullOrEmpty(t))
+                        .ToList();
+                }
+
+                var success = await _todoService.AddItemAsync(dbItem, user);
+                if (!success)
+                {
+                    _logger.LogError($"Failed to add item for user {user.Email}.");
+                    return BadRequest("Could not add item.");
+                }
+
+                _logger.LogInformation($"User {user.Email} created item {dbItem.Title}.");
+                return CreatedAtAction(nameof(GetItemById), new { id = dbItem.Id }, dbItem);
+            }
+            catch (Exception ex)
             {
-                _logger.LogError($"Unknown user tried creating item.");
-                return Unauthorized();
+                // Log detailed exception and return Problem with details in Development to aid debugging
+                _logger.LogError(ex, "Exception while creating item");
+                return Problem(detail: ex.ToString(), statusCode: StatusCodes.Status500InternalServerError);
             }
-
-            if (!ModelState.IsValid)
-            {
-                _logger.LogError($"Invalid item provided.");
-                return BadRequest();
-            }
-
-            if (item.Done == null) item.Done = false;
-            var dbItem = _mapper.Map<TodoItem>(item);
-            // Ensure DuetoDateTime (EF-mapped property) is set so it maps to the DueTo column
-            // Map DTO DateTime to entity Instant (DueTo) used by EF serialization property
-            dbItem.DueTo = Instant.FromDateTimeUtc(DateTime.SpecifyKind(item.DuetoDateTime, DateTimeKind.Utc));
-            // Convert comma separated tags string into IEnumerable<string>
-            if (!string.IsNullOrWhiteSpace(item.Tags))
-            {
-                dbItem.Tags = item.Tags.Split(',')
-                    .Select(t => t.Trim())
-                    .Where(t => !string.IsNullOrEmpty(t))
-                    .ToList();
-            }
-
-            var success = await _todoService.AddItemAsync(dbItem, user);
-            if (!success)
-            {
-                _logger.LogError($"Failed to add item for user {user.Email}.");
-                return BadRequest("Could not add item.");
-            }
-
-            _logger.LogInformation($"User {user.Email} created item {dbItem.Title}.");
-            return CreatedAtAction(nameof(GetItemById), new { id = dbItem.Id }, dbItem);
         }
 
+        /// <summary>
+        /// 上传待办事项附件文件
+        /// </summary>
+        /// <param name="todoId">待办事项ID</param>
+        /// <param name="file">要上传的文件</param>
+        /// <returns>文件上传结果</returns>
+        /// <response code="201">文件上传成功</response>
+        /// <response code="400">请求参数错误</response>
+        /// <response code="401">用户未授权</response>
+        /// <response code="404">待办事项不存在</response>
         [HttpPost("{todoId}")]
+        [ApiExplorerSettings(IgnoreApi = true)]
         [RequestSizeLimit(52428800)]
-        public async Task<ActionResult> UploadFile(Guid todoId, [FromForm] IFormFile file)
+        [Consumes("multipart/form-data")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(object), 201)]
+        [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
+        public async Task<ActionResult> UploadFile(Guid todoId, [FromForm] Models.UploadFileRequest request)
         {
             var user = await GetCurrentUserAsync();
             if (user == null)
@@ -234,6 +273,7 @@ namespace TodoList.API.Controllers
                 return NotFound();
             }
 
+            var file = request?.File;
             if (file == null || file.Length == 0)
             {
                 _logger.LogInformation($"User with email {user.Email} tried to upload a file with null or empty file.");
