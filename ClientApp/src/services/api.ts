@@ -41,6 +41,30 @@ export async function createTodo(todo: any) {
     return res.json();
 }
 
+export async function deleteTodoById(id: string) {
+    const res = await fetch(`${API_BASE}/api/todoitems/${id}`, {
+        method: 'DELETE',
+        headers: authHeaders(),
+    });
+    if (!res.ok) throw new Error(res.statusText);
+    return res.ok;
+}
+
+export async function toggleTodoItem(id: string, done: boolean) {
+    const res = await fetch(`${API_BASE}/api/todoitems/${id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('jwt')}`
+        },
+        body: JSON.stringify({
+            done: !done,
+        }),
+    });
+    if (!res.ok) throw new Error(res.statusText);
+    return res;
+}
+
 export async function uploadFile(todoId: string, file: File) {
     const fd = new FormData();
     fd.append('file', file);
@@ -62,4 +86,4 @@ export async function logout() {
     localStorage.removeItem('jwt');
 }
 
-export default { login, getTodos, createTodo, uploadFile, logout };
+export default { login, getTodos, createTodo, uploadFile, logout, deleteTodoById, toggleTodoItem };

@@ -26,17 +26,9 @@ const Home: React.FC = () => {
 
   const deleteTodoItem = async (id: string) => {
     try {
-      const response = await fetch(`/api/todoitems/${id}`, {
-        method: 'DELETE',
-        headers: {},
-      });
-
-      if (response.ok) {
-        // 重新获取待办事项列表
-        fetchTodoItems();
-      } else {
-        console.error('删除待办事项失败:', response.statusText);
-      }
+      await api.deleteTodoById(id);
+      // 删除成功后重新获取待办事项列表
+      fetchTodoItems();
     } catch (error) {
       console.error('删除待办事项失败:', error);
     }
@@ -44,16 +36,7 @@ const Home: React.FC = () => {
 
   const toggleTodoItem = async (id: string, done: boolean) => {
     try {
-      const response = await fetch(`/api/todoitems/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          done: !done,
-        }),
-      });
-
+      const response = await api.toggleTodoItem(id, done);
       if (response.ok) {
         // 重新获取待办事项列表
         fetchTodoItems();
