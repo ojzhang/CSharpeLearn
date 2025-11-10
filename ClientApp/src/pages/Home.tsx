@@ -34,9 +34,9 @@ const Home: React.FC = () => {
     }
   };
 
-  const toggleTodoItem = async (id: string, done: boolean) => {
+  const updateStatus = async (id: string, done: boolean) => {
     try {
-      const response = await api.toggleTodoItem(id, done);
+      const response = await api.updateStatus(id, done);
       if (response.ok) {
         // 重新获取待办事项列表
         fetchTodoItems();
@@ -70,7 +70,7 @@ const Home: React.FC = () => {
                 <TodoList
                   items={todoItems}
                   onDelete={deleteTodoItem}
-                  onToggle={toggleTodoItem}
+                  updateStatus={updateStatus}
                 />
               ) : (
                 <div className="alert info">

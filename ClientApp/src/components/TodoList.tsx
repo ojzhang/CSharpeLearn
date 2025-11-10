@@ -4,10 +4,10 @@ import type { TodoItem } from '../types/TodoItem';
 interface TodoListProps {
   items: TodoItem[];
   onDelete: (id: string) => void;
-  onToggle: (id: string, done: boolean) => void;
+  updateStatus: (id: string, done: boolean) => void;
 }
 
-const TodoList: React.FC<TodoListProps> = ({ items, onDelete, onToggle }) => {
+const TodoList: React.FC<TodoListProps> = ({ items, onDelete, updateStatus }) => {
   const formatDueDate = (due: any): string => {
     if (due === null || due === undefined || due === '') return '无截止日期';
 
@@ -95,7 +95,7 @@ const TodoList: React.FC<TodoListProps> = ({ items, onDelete, onToggle }) => {
                 <td>
                   <button
                     className={`btn ${item.done ? 'btn-success' : 'btn-warning'}`}
-                    onClick={() => onToggle(item.id, item.done)}
+                    onClick={() => updateStatus(item.id, item.done)}
                   >
                     {item.done ? '已完成' : '未完成'}
                   </button>

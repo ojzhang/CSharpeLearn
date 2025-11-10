@@ -358,6 +358,7 @@ namespace TodoList.API.Controllers
                 return NotFound();
             }
 
+            // false转true（前端执行）可以正常执行该判断语句；本来是true的话前端就会把该属性转为false不会执行该语句。
             if (status)
             {
                 await _todoService.UpdateDoneAsync(id, user);
